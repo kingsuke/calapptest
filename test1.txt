@@ -1,0 +1,1 @@
+{"dataA" : "2","dataB"  : "2","operation" : "minus","resultvalue" : "0"}

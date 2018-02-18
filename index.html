@@ -1,0 +1,87 @@
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+          <style>
+          .focus:focus 
+          {
+               background-color: red;
+          }
+
+          </style>
+           <script src="index.js"></script>
+      </head>
+         <script>
+            var {ipcRenderer} = require('electron');  
+             var dialog = require('electron').remote.dialog;
+              var operationname;
+            function Calc(clicked_id){
+                operationname = clicked_id.value;
+                var a = document.querySelector('#A').value;
+                var b = document.querySelector('#B').value;
+                console.log(operationname + ":" + a + ":" + b);
+                var jsonab =  {"operation":operationname,"dataA":a, "dataB":b}; 
+                  console.log(jsonab);
+                var result = ipcRenderer.sendSync('operator',jsonab);
+                console.log(result);
+                 document.getElementById('resultoperator').value = result;
+            }
+             
+            function openFile () {
+             dialog.showOpenDialog(function (fileNames) {
+              if (fileNames === undefined) return;
+              var fileName = fileNames[0];
+                 console.log(fileName);
+              fs.readFile(fileName, 'utf-8', function (err, data) {
+                console.log(data);
+                var result = JSON.parse(data);  
+                  console.log('read file : ' + result.operation + '|' + result.dataA + '|' + result.dataB + '|' + result.resultvalue);
+                   document.querySelector('#resultoperator').value = result.resultvalue;
+                  document.querySelector('#A').value = result.dataA;
+                  document.querySelector('#B').value = result.dataB;
+                  document.querySelector('#'+result.operation).focus();
+              });
+             }); 
+            }
+
+            function saveFile () {
+                 var a = document.querySelector('#A').value;
+                var b = document.querySelector('#B').value;
+               var resultvalue = document.querySelector('#resultoperator').value
+                if(!a || a == undefined || a == "" || !b || b == undefined || b == ""|| !resultvalue|| resultvalue == undefined || resultvalue == ""){
+                      dialog.showMessageBox({ message: "please enter value a,b and press opertor",buttons: ["OK"] });
+                }else{
+                     let content  = '{"dataA" : "'+ a +'","dataB"  : "'+ b +'","operation" : "'+operationname +'","resultvalue" : "'+resultvalue +'"}';
+                    console.log(content);
+                    dialog.showSaveDialog({ filters: [
+                     { name: 'test', extensions: ['txt'] }
+                    ]}, function (fileName) {
+                    if (fileName === undefined) return;
+                    fs.writeFile(fileName,content, function (err) {  
+                     dialog.showMessageBox({ message: "The file has been saved! :-)",
+                      buttons: ["OK"] });
+                    });
+              }); 
+                }
+           
+            }
+          </script>
+      <body>
+          <from>
+             <div id="input_calc" class="ui input focus">
+                 A <input type="text" id="A" ><br>
+                 B <input type="text" id="B" ><br>
+                </div>
+                <button class="focus" id="plus" value="plus" onclick="Calc(this)">+</button>
+                <button class="focus" id="minus" value="minus" onclick="Calc(this)">-</button>
+                <button class="focus" id="multiply" value="multiply" onclick="Calc(this)">x</button>
+                <button class="focus"id="divide" value="divide" onclick="Calc(this)">/</button>
+                <button class="focus" id="pow" value="pow" onclick="Calc(this)">Pow</button>
+                <br>
+                Result <input type="text" id="resultoperator">
+                <br>              
+              <button id="openFile" onclick="openFile();">Load</button>
+              <button id="saveFile" onclick="saveFile();">Save</button>
+        </from>
+      </body>
+    </html>

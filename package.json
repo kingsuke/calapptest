@@ -1,0 +1,17 @@
+{
+  "name": "calapp",
+  "version": "1.0.0",
+  "description": "test calapp",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron-json-storage": "^4.0.2"
+  },
+  "devDependencies": {
+    "electron": "1.8.2"
+  }
+}
